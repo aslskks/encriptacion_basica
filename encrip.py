@@ -41,6 +41,13 @@ archivo_a_encriptar = 'a.txt'
 
 # Generar una clave aleatoria de 32 bytes
 clave_correcta = Fernet.generate_key()
+nombre_archivo = "clave_deencriptacion"
+try:
+    with open(nombre_archivo, 'w') as archivo:
+        # Escribe datos en el archivo
+        archivo.write(clave correcta)
+except IOError as e:
+    print("Ocurrió un error al escribir en el archivo:", str(e)
 
 # Codificar la clave utilizando Base64
 clave_correcta_codificada = base64.urlsafe_b64encode(clave_correcta)
