@@ -1,30 +1,28 @@
-print("no se puedo perdon\con clave si")
-p1 = input("quieres usar clave s/n: ").lower()
-if p1 == "si" or "s":
-	pass
-else:
-	exit()
-import getpass
-import base64
 from cryptography.fernet import Fernet
 
-# Clave secreta que se utiliza para desencriptar
-clave_secreta = getpass.getpass("Ingresa la clave secreta: ").encode()
+def desencriptar_archivo(archivo_entrada, archivo_salida, clave):
+    try:
+        fernet = Fernet(clave)
+        
+        with open(archivo_entrada, 'rb') as f_in:
+            archivo_encriptado = f_in.read()
 
-# Datos encriptados que quieres desencriptar
-datos_encriptados = input("Ingresa los datos encriptados: ").encode()
+        archivo_desencriptado = fernet.decrypt(archivo_encriptado)
 
-# Inicializa el objeto Fernet con la clave secreta
-fernet = Fernet(base64.urlsafe_b64encode(clave_secreta))
+        with open(archivo_salida, 'wb') as f_out:
+            f_out.write(archivo_desencriptado)
 
-# Desencripta los datos
-datos_desencriptados = fernet.decrypt(datos_encriptados)
+        print("Archivo desencriptado con éxito.")
+    except Exception as e:
+        print("Error al desencriptar el archivo:", str(e))
 
-# Puedes guardar los datos desencriptados en un archivo si es necesario
-nombre_archivo = input("Ingresa el nombre del archivo destino (sin extensión): ")
-nombre_archivo_destino = nombre_archivo + ".decrypted"
+# Reemplaza 'ruta_del_archivo_encriptado' con la ubicación de tu archivo encriptado
+ruta_del_archivo_encriptado = f'{input("nombre del archivo encriptado en la misma carpeta: ")}.enc'
+# Reemplaza 'ruta_del_archivo_desencriptado' con la ubicación donde deseas guardar el archivo desencriptado
+ruta_del_archivo_desencriptado = "archivodesencriptado"
+# Reemplaza 'tu_clave_en_base64' con la clave en base64 que se utilizó para encriptar el archivo
+clave = input("clave: ")
+tu_clave_en_base64 = clave
 
-with open(nombre_archivo_destino, 'wb') as archivo_destino:
-    archivo_destino.write(datos_desencriptados)
-
-print("Datos desencriptados y guardados en", nombre_archivo_destino)
+# Llama a la función de desencriptación
+desencriptar_archivo(ruta_del_archivo_encriptado, ruta_del_archivo_desencriptado, tu_clave_en_base64)
