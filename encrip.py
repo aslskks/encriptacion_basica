@@ -47,7 +47,7 @@ try:
         # Escribe datos en el archivo
         archivo.write(clave_correcta)
 except IOError as e:
-    print("Ocurrió un error al escribir en el archivo:", str(e)
+    print("Ocurrió un error al escribir en el archivo:", str(e))
 
 # Codificar la clave utilizando Base64
 clave_correcta_codificada = base64.urlsafe_b64encode(clave_correcta)
