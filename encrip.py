@@ -35,9 +35,9 @@ def desencriptar_archivo(archivo_encriptado, clave):
         return False
 
     return True
-
+p2 = input("nombre del archivo misma carpeta")
 # Ruta al archivo que deseas encriptar
-archivo_a_encriptar = 'a.txt'
+archivo_a_encriptar = ''
 
 # Generar una clave aleatoria de 32 bytes
 clave_correcta = Fernet.generate_key()
@@ -45,7 +45,7 @@ nombre_archivo = "clave_deencriptacion"
 try:
     with open(nombre_archivo, 'w') as archivo:
         # Escribe datos en el archivo
-        archivo.write(clave correcta)
+        archivo.write(clave_correcta)
 except IOError as e:
     print("Ocurrió un error al escribir en el archivo:", str(e)
 
