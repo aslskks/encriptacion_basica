@@ -75,16 +75,21 @@ class EncriptadorApp(QMainWindow):
     def enviar_clave_al_servidor(self):
         clave = self.input_clave.text()
         if clave:
-            url = "http://localhost:5000/guardar_clave"  # Reemplaza con la URL correcta del servidor
-            data = {'clave': clave}
-            response = requests.post(url, data=data)
+            url = "http://127.0.0.1:5000"
 
-            if response.status_code == 200:
-                print("Clave enviada y guardada en el servidor con éxito.")
-            else:
-                print("Error al enviar la clave al servidor.")
-        else:
-            print("Debes ingresar la clave antes de enviarla al servidor.")
+            # Datos a enviar en el cuerpo de la solicitud (en este caso, un string vacío)
+            data = clave
+
+            # Enviar la solicitud POST
+            try:
+                response = requests.post(url, data=data)
+                if response.status_code == 200:
+                    print("Solicitud enviada con éxito.")
+                else:
+                    print("Error al enviar la solicitud. Código de estado:", response.status_code)
+            except Exception as e:
+                print("Error al enviar la solicitud:", str(e))
+            
 
 def main():
     app = QApplication(sys.argv)
