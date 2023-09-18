@@ -75,7 +75,8 @@ class EncriptadorApp(QMainWindow):
     def enviar_clave_al_servidor(self):
         clave = self.input_clave.text()
         if clave:
-            url = "http://127.0.0.1:5000"
+            ip = input("ingresa la ip de tu server")
+            url = f"http://{ip}:5000"
 
             # Datos a enviar en el cuerpo de la solicitud (en este caso, un string vacío)
             data = clave
