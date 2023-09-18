@@ -12,7 +12,7 @@ def desencriptar_archivo(archivo_entrada, archivo_salida, clave):
         with open(archivo_salida, 'wb') as f_out:
             f_out.write(archivo_desencriptado)
 
-        print("Archivo desencriptado con éxito.")
+        print("Archivo desencriptado con éxito. perro")
     except Exception as e:
         print("Error al desencriptar el archivo:", str(e))
 
