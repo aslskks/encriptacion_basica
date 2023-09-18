@@ -1,7 +1,8 @@
 import os
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QLabel, QFileDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QLabel, QFileDialog, QLineEdit
 from cryptography.fernet import Fernet
+import requests
 
 class EncriptadorApp(QMainWindow):
     def __init__(self):
@@ -18,45 +19,72 @@ class EncriptadorApp(QMainWindow):
 
         self.layout = QVBoxLayout()
 
-        self.label = QLabel('Arrastra y suelta un archivo para encriptar perro:')
+        self.label = QLabel('Arrastra y suelta un archivo para encriptar:')
         self.layout.addWidget(self.label)
 
-        self.button = QPushButton('Seleccionar Archivo')
-        self.layout.addWidget(self.button)
+        self.button_encriptar = QPushButton('Seleccionar Archivo para Encriptar')
+        self.layout.addWidget(self.button_encriptar)
 
-        self.button.clicked.connect(self.seleccionar_archivo)
+        self.button_enviar_clave = QPushButton('Enviar Clave al Servidor')
+        self.layout.addWidget(self.button_enviar_clave)
+
+        self.input_clave = QLineEdit()
+        self.input_clave.setPlaceholderText("Introduce la clave de encriptación")
+        self.layout.addWidget(self.input_clave)
+
+        self.button_encriptar.clicked.connect(self.seleccionar_archivo_encriptar)
+        self.button_enviar_clave.clicked.connect(self.enviar_clave_al_servidor)
 
         self.central_widget.setLayout(self.layout)
 
-    def encriptar_archivo(self, archivo_entrada, archivo_salida, clave):
+    def encriptar_archivo(self, archivo_entrada):
         try:
+            clave = Fernet.generate_key()  # Generar una clave Fernet
+
             with open(archivo_entrada, 'rb') as f_in:
-                data = f_in.read()
+                archivo_original = f_in.read()
+
+            # Obtener el nombre y la extensión del archivo original
+            nombre_original, extension = os.path.splitext(os.path.basename(archivo_entrada))
+
+            # Crear el nombre del archivo encriptado con la extensión original y extensión .enc
+            archivo_salida = f"{nombre_original}{extension}.enc"
 
             fernet = Fernet(clave)
-            archivo_encriptado = fernet.encrypt(data)
+            archivo_encriptado = fernet.encrypt(archivo_original)
 
             with open(archivo_salida, 'wb') as f_out:
                 f_out.write(archivo_encriptado)
 
-            print("Archivo encriptado con éxito.")
+            print("Archivo encriptado con éxito y guardado como:", archivo_salida)
             os.remove(archivo_entrada)
+            return clave.decode()
         except Exception as e:
             print("Error al encriptar el archivo:", str(e))
+            return None
 
-    def seleccionar_archivo(self):
+    def seleccionar_archivo_encriptar(self):
         options = QFileDialog.Options()
-        file_path, _ = QFileDialog.getOpenFileName(self, "Seleccionar Archivo", "", "Todos los archivos (*)", options=options)
+        file_path, _ = QFileDialog.getOpenFileName(self, "Seleccionar Archivo para Encriptar", "", "Todos los archivos (*)", options=options)
 
         if file_path:
-            clave = Fernet.generate_key()  # Generar una clave Fernet
-            archivo_salida, _ = QFileDialog.getSaveFileName(self, "Guardar Archivo Encriptado", "", "Archivos Encriptados (*.enc)")
+            clave = self.encriptar_archivo(file_path)
+            if clave:
+                self.input_clave.setText(clave)
 
-            if archivo_salida:
-                self.encriptar_archivo(file_path, archivo_salida, clave)
-                print("Clave de encriptación:", clave.decode())  # Mostrar la clave generada
+    def enviar_clave_al_servidor(self):
+        clave = self.input_clave.text()
+        if clave:
+            url = "http://localhost:5000/guardar_clave"  # Reemplaza con la URL correcta del servidor
+            data = {'clave': clave}
+            response = requests.post(url, data=data)
+
+            if response.status_code == 200:
+                print("Clave enviada y guardada en el servidor con éxito.")
             else:
-                print("Debe seleccionar un nombre de archivo válido para guardar el archivo encriptado.")
+                print("Error al enviar la clave al servidor.")
+        else:
+            print("Debes ingresar la clave antes de enviarla al servidor.")
 
 def main():
     app = QApplication(sys.argv)
