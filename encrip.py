@@ -18,7 +18,7 @@ class EncriptadorApp(QMainWindow):
 
         self.layout = QVBoxLayout()
 
-        self.label = QLabel('Arrastra y suelta un archivo para encriptar:')
+        self.label = QLabel('Arrastra y suelta un archivo para encriptar perro:')
         self.layout.addWidget(self.label)
 
         self.button = QPushButton('Seleccionar Archivo')
