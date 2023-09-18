@@ -21,42 +21,44 @@ class EncriptadorApp(QMainWindow):
         self.label = QLabel('Arrastra y suelta un archivo para encriptar:')
         self.layout.addWidget(self.label)
 
-        self.button = QPushButton('Seleccionar Archivo')
-        self.layout.addWidget(self.button)
+        self.button_encriptar = QPushButton('Seleccionar Archivo para Encriptar')
+        self.layout.addWidget(self.button_encriptar)
 
-        self.button.clicked.connect(self.seleccionar_archivo)
+        self.button_encriptar.clicked.connect(self.seleccionar_archivo_encriptar)
 
         self.central_widget.setLayout(self.layout)
 
-    def encriptar_archivo(self, archivo_entrada, archivo_salida, clave):
+    def encriptar_archivo(self, archivo_entrada):
         try:
+            clave = Fernet.generate_key()  # Generar una clave Fernet
+
             with open(archivo_entrada, 'rb') as f_in:
-                data = f_in.read()
+                archivo_original = f_in.read()
+
+            # Obtener el nombre y la extensión del archivo original
+            nombre_original, extension = os.path.splitext(os.path.basename(archivo_entrada))
+
+            # Crear el nombre del archivo encriptado con la extensión original y extensión .enc
+            archivo_salida = f"{nombre_original}{extension}.enc"
 
             fernet = Fernet(clave)
-            archivo_encriptado = fernet.encrypt(data)
+            archivo_encriptado = fernet.encrypt(archivo_original)
 
             with open(archivo_salida, 'wb') as f_out:
                 f_out.write(archivo_encriptado)
 
-            print("Archivo encriptado con éxito.")
+            print("Archivo encriptado con éxito y guardado como:", archivo_salida)
+            print("Clave de encriptación:", clave.decode())  # Mostrar la clave generada
             os.remove(archivo_entrada)
         except Exception as e:
             print("Error al encriptar el archivo:", str(e))
 
-    def seleccionar_archivo(self):
+    def seleccionar_archivo_encriptar(self):
         options = QFileDialog.Options()
-        file_path, _ = QFileDialog.getOpenFileName(self, "Seleccionar Archivo", "", "Todos los archivos (*)", options=options)
+        file_path, _ = QFileDialog.getOpenFileName(self, "Seleccionar Archivo para Encriptar", "", "Todos los archivos (*)", options=options)
 
         if file_path:
-            clave = Fernet.generate_key()  # Generar una clave Fernet
-            archivo_salida, _ = QFileDialog.getSaveFileName(self, "Guardar Archivo Encriptado", "", "Archivos Encriptados (*.enc)")
-
-            if archivo_salida:
-                self.encriptar_archivo(file_path, archivo_salida, clave)
-                print("Clave de encriptación:", clave.decode())  # Mostrar la clave generada
-            else:
-                print("Debe seleccionar un nombre de archivo válido para guardar el archivo encriptado.")
+            self.encriptar_archivo(file_path)
 
 def main():
     app = QApplication(sys.argv)

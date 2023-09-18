@@ -1,28 +1,76 @@
+import os
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QLabel, QFileDialog, QLineEdit
 from cryptography.fernet import Fernet
 
-def desencriptar_archivo(archivo_entrada, archivo_salida, clave):
-    try:
-        fernet = Fernet(clave)
-        
-        with open(archivo_entrada, 'rb') as f_in:
-            archivo_encriptado = f_in.read()
+class DesencriptadorApp(QMainWindow):
+    def __init__(self):
+        super().__init__()
 
-        archivo_desencriptado = fernet.decrypt(archivo_encriptado)
+        self.initUI()
 
-        with open(archivo_salida, 'wb') as f_out:
-            f_out.write(archivo_desencriptado)
+    def initUI(self):
+        self.setWindowTitle('Desencriptador de Archivos')
+        self.setGeometry(100, 100, 400, 200)
 
-        print("Archivo desencriptado con éxito.")
-    except Exception as e:
-        print("Error al desencriptar el archivo:", str(e))
+        self.central_widget = QWidget(self)
+        self.setCentralWidget(self.central_widget)
 
-# Reemplaza 'ruta_del_archivo_encriptado' con la ubicación de tu archivo encriptado
-ruta_del_archivo_encriptado = f'{input("nombre del archivo encriptado en la misma carpeta: ")}.enc'
-# Reemplaza 'ruta_del_archivo_desencriptado' con la ubicación donde deseas guardar el archivo desencriptado
-ruta_del_archivo_desencriptado = "archivodesencriptado"
-# Reemplaza 'tu_clave_en_base64' con la clave en base64 que se utilizó para encriptar el archivo
-clave = input("clave: ")
-tu_clave_en_base64 = clave
+        self.layout = QVBoxLayout()
 
-# Llama a la función de desencriptación
-desencriptar_archivo(ruta_del_archivo_encriptado, ruta_del_archivo_desencriptado, tu_clave_en_base64)
+        self.label = QLabel('Arrastra y suelta un archivo para desencriptar:')
+        self.layout.addWidget(self.label)
+
+        self.button_desencriptar = QPushButton('Seleccionar Archivo para Desencriptar')
+        self.layout.addWidget(self.button_desencriptar)
+
+        self.input_clave = QLineEdit()
+        self.input_clave.setPlaceholderText("Introduce la clave de desencriptación")
+        self.layout.addWidget(self.input_clave)
+
+        self.button_desencriptar.clicked.connect(self.seleccionar_archivo_desencriptar)
+
+        self.central_widget.setLayout(self.layout)
+
+    def desencriptar_archivo(self, archivo_entrada, clave):
+        try:
+            fernet = Fernet(clave)
+
+            with open(archivo_entrada, 'rb') as f_in:
+                archivo_encriptado = f_in.read()
+
+            # Obtener el nombre original eliminando la extensión .enc
+            nombre_original, _ = os.path.splitext(os.path.basename(archivo_entrada))
+
+            # Crear el nombre del archivo desencriptado con la extensión original
+            archivo_salida = f"{nombre_original}"
+
+            archivo_desencriptado = fernet.decrypt(archivo_encriptado)
+
+            with open(archivo_salida, 'wb') as f_out:
+                f_out.write(archivo_desencriptado)
+
+            print("Archivo desencriptado con éxito y guardado como:", archivo_salida)
+            os.remove(archivo_entrada)
+        except Exception as e:
+            print("Error al desencriptar el archivo:", str(e))
+
+    def seleccionar_archivo_desencriptar(self):
+        options = QFileDialog.Options()
+        file_path, _ = QFileDialog.getOpenFileName(self, "Seleccionar Archivo para Desencriptar", "", "Archivos Encriptados (*)", options=options)
+
+        if file_path:
+            clave = self.input_clave.text()  # Obtener la clave de desencriptación ingresada por el usuario
+            if clave:
+                self.desencriptar_archivo(file_path, clave)
+            else:
+                print("Debes ingresar la clave de desencriptación.")
+
+def main():
+    app = QApplication(sys.argv)
+    desencriptador = DesencriptadorApp()
+    desencriptador.show()
+    sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    main()
