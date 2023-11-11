@@ -1,6 +1,6 @@
 # encriptacion en python
 
-&nbsp;encriptacion_fuerte cualquier tipo de archivo con clave enviada por un puerto
+&nbsp;encriptacion_fuerte cualquier tipo de archivo con clave enviada por un puerto  
 
 ## Requisitos
 
@@ -10,13 +10,11 @@
 
 &nbsp;1. **Clonar el Repositorio:**
 
-&nbsp;&nbsp;git clone https://github.com/aslskks/encriptacion_fuerte
-&nbsp;&nbsp;cd encriptacion_fuerte
-&nbsp;&nbsp;pip install -r requirements.txt
+&nbsp;&nbsp;git clone https://github.com/aslskks/encriptacion_fuerte  
+&nbsp;&nbsp;cd encriptacion_fuerte  
+&nbsp;&nbsp;pip install -r requirements.txt  
 
 &nbsp;2. **Ejecutar:**
-&nbsp;&nbsp; python encriptacion.py para encriptar
-
-&nbsp;&nbsp;python desencriptar.py para desencriptar
-
-&nbsp;&nbsp;python server en otra computadora o en la misma para recivir la clave pero solo de encrip.py
+&nbsp;&nbsp; python encriptacion.py para encriptar  
+&nbsp;&nbsp;python desencriptar.py para desencriptar  
+&nbsp;&nbsp;python server en otra computadora o en la misma para recivir la clave pero solo de encrip.py  
